@@ -12,6 +12,8 @@ describe SidekiqScheduler::Manager do
         enabled: true,
         dynamic: true,
         listened_queues_only: true,
+        limited_low_queue: true,
+        limited_queue_delay: 2,
         schedule: { current: ScheduleFaker.cron_schedule( class: 'CurrentJob') }
       }
     end
@@ -20,6 +22,8 @@ describe SidekiqScheduler::Manager do
       Sidekiq::Scheduler.enabled = nil
       Sidekiq::Scheduler.dynamic = nil
       Sidekiq::Scheduler.listened_queues_only = nil
+      Sidekiq::Scheduler.limited_low_queue = false
+      Sidekiq::Scheduler.limited_queue_delay = 5
       Sidekiq.schedule = previous_schedule
     end
 
@@ -47,6 +51,18 @@ describe SidekiqScheduler::Manager do
       expect {
         subject
       }.to change { Sidekiq.schedule }.to(options[:schedule])
+    end
+
+    it 'sets Sidekiq::Scheduler.limited_low_queue flag' do
+      expect {
+        subject
+      }.to change { Sidekiq::Scheduler.limited_low_queue }.to(options[:limited_low_queue])
+    end
+
+    it 'sets Sidekiq::Scheduler.limited_queue_delay flag' do
+      expect {
+        subject
+      }.to change { Sidekiq::Scheduler.limited_queue_delay }.to(options[:limited_queue_delay])
     end
 
     context 'when no :schedule option' do

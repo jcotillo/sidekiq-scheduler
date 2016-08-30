@@ -18,6 +18,8 @@ module SidekiqScheduler
       Sidekiq::Scheduler.enabled = options[:enabled]
       Sidekiq::Scheduler.dynamic = options[:dynamic]
       Sidekiq::Scheduler.listened_queues_only = options[:listened_queues_only]
+      Sidekiq::Scheduler.limited_low_queue = options[:limited_low_queue]
+      Sidekiq::Scheduler.limited_queue_delay = options[:limited_queue_delay]
       Sidekiq.schedule = options[:schedule] if options[:schedule]
     end
 

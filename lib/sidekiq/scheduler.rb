@@ -28,6 +28,12 @@ module Sidekiq
       # Set to schedule jobs only when will be pushed to queues listened by sidekiq
       attr_accessor :listened_queues_only
 
+      # Set to limit low priority queues in sidekiq
+      attr_accessor :limited_low_queue
+
+      # Set a delay in minutes for low priority queues that surpass limit 
+      attr_accessor :limited_queue_delay
+
       # the Rufus::Scheduler jobs that are scheduled
       def scheduled_jobs
         @@scheduled_jobs
@@ -36,6 +42,7 @@ module Sidekiq
       def print_schedule
         if rufus_scheduler
           logger.info "Scheduling Info\tLast Run"
+        # TODO: debug this method, method no longer available
           scheduler_jobs = rufus_scheduler.all_jobs
           scheduler_jobs.each do |_, v|
             logger.info "#{v.t}\t#{v.last}\t"
@@ -51,6 +58,7 @@ module Sidekiq
 
           # Load schedule from redis for the first time if dynamic
           if dynamic
+            puts "reloading schedule now"
             Sidekiq.reload_schedule!
             rufus_scheduler.every('5s') do
               update_schedule
@@ -61,7 +69,7 @@ module Sidekiq
 
 
           @@scheduled_jobs = {}
-
+          # binding.pry
           Sidekiq.schedule.each do |name, config|
             if !listened_queues_only || enabled_queue?(config['queue'])
               load_schedule_job(name, config)
