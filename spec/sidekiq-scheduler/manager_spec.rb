@@ -56,7 +56,7 @@ describe SidekiqScheduler::Manager do
     it 'sets Sidekiq::Scheduler.limited_low_queue flag' do
       expect {
         subject
-      }.to change { Sidekiq::Scheduler.limited_low_queue }.to(options[:limited_low_queue])
+      }.to change { Sidekiq::Scheduler.limited_low_queue }.to(options[:performer])
     end
 
     it 'sets Sidekiq::Scheduler.limited_queue_delay flag' do

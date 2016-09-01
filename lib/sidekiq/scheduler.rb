@@ -31,8 +31,8 @@ module Sidekiq
       # Set to limit low priority queues in sidekiq
       attr_accessor :limited_low_queue
 
-      # Set a delay in minutes for low priority queues that surpass limit 
-      attr_accessor :limited_queue_delay
+      # Set a custom sidekiq push method 
+      attr_accessor :performer
 
       # the Rufus::Scheduler jobs that are scheduled
       def scheduled_jobs
@@ -69,7 +69,7 @@ module Sidekiq
 
 
           @@scheduled_jobs = {}
-          # binding.pry
+
           Sidekiq.schedule.each do |name, config|
             if !listened_queues_only || enabled_queue?(config['queue'])
               load_schedule_job(name, config)
@@ -248,6 +248,8 @@ module Sidekiq
       end
 
       def enque_with_sidekiq(config)
+        # where the limits should happen.... 
+        binding.pry
         Sidekiq::Client.push(sanitize_job_config(config))
       end
 
@@ -367,3 +369,4 @@ module Sidekiq
     end
   end
 end
+8
